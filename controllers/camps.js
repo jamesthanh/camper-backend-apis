@@ -1,34 +1,76 @@
+const Camp = require('../models/Camp');
+
 // @desc Get all camps
 // @route GET /api/v1/camps
 // @access Public
-exports.getCamps = (req, res, next) => {
-  res.status(200).json({ success: true, msg: 'Show all camps' });
+exports.getCamps = async (req, res, next) => {
+  try {
+    const camps = await Camp.find();
+    res.status(200).json({ success: true, count: camps.length, data: camps });
+  } catch (err) {
+    res.status(400).json({ success: false });
+  }
 };
 
 // @desc Get a single camp
 // @route GET /api/v1/camps/:id
 // @access Public
-exports.getCamp = (req, res, next) => {
-  res.status(200).json({ success: true, msg: `Display camp ${req.params.id}` });
+exports.getCamp = async (req, res, next) => {
+  try {
+    const camp = await Camp.findById(req.params.id);
+    if (!camp) {
+      return res.status(400).json({ success: false });
+    }
+    res.status(200).json({ success: true, data: camp });
+  } catch (err) {
+    res.status(400).json({ success: false });
+  }
 };
 
 // @desc Create new camp
 // @route POST /api/v1/camps
 // @access Private
-exports.createCamp = (req, res, next) => {
-  res.status(200).json({ success: true, msg: 'Create new camp' });
+exports.createCamp = async (req, res, next) => {
+  try {
+    const camp = await Camp.create(req.body);
+    res.status(201).json({
+      success: true,
+      data: camp,
+    });
+  } catch (err) {
+    res.status(400).json({ success: false });
+  }
 };
 
 // @desc Update camp
 // @route PUT /api/v1/camps/:id
 // @access Private
-exports.updateCamp = (req, res, next) => {
-  res.status(200).json({ success: true, msg: `Update camp ${req.params.id}` });
+exports.updateCamp = async (req, res, next) => {
+  try {
+    const camp = await Camp.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!camp) {
+      return res.status(400).json({ success: false });
+    }
+    res.status(200).json({ success: true, data: camp });
+  } catch (err) {
+    res.status(400).json({ success: false });
+  }
 };
 
 // @desc Delete camp
 // @route DELETE /api/v1/camps/:id
 // @access Private
-exports.deleteCamp = (req, res, next) => {
-  res.status(200).json({ success: true, msg: `Delete camp ${req.params.id}` });
+exports.deleteCamp = async (req, res, next) => {
+  try {
+    const camp = await Camp.findByIdAndDelete(req.params.id);
+    if (!camp) {
+      return res.status(400).json({ success: false });
+    }
+    res.status(200).json({ success: true, data: {} });
+  } catch (err) {
+    res.status(400).json({ success: false });
+  }
 };
