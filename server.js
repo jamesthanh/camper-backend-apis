@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
 const colors = require('colors');
+const errorHanlder = require('./middleware/error');
 const connectDB = require('./config/db');
 
 // Load config file
@@ -25,6 +26,8 @@ if (process.env.NODE_ENV === 'development') {
 
 // Moute Routers
 app.use('/api/v1/camps', camps);
+
+app.use(errorHanlder);
 
 const PORT = process.env.PORT || 5000;
 
