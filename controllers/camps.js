@@ -1,3 +1,4 @@
+const ErrorResponse = require('../services/errorResponse');
 const Camp = require('../models/Camp');
 
 // @desc Get all camps
@@ -19,12 +20,13 @@ exports.getCamp = async (req, res, next) => {
   try {
     const camp = await Camp.findById(req.params.id);
     if (!camp) {
-      return res.status(400).json({ success: false });
+      return next(
+        new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({ success: true, data: camp });
   } catch (err) {
-    // res.status(400).json({ success: false });
-    next(err);
+    next(new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404));
   }
 };
 
