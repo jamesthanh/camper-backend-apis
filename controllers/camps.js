@@ -9,7 +9,7 @@ exports.getCamps = async (req, res, next) => {
     const camps = await Camp.find();
     res.status(200).json({ success: true, count: camps.length, data: camps });
   } catch (err) {
-    res.status(400).json({ success: false });
+    next(err);
   }
 };
 
@@ -26,7 +26,7 @@ exports.getCamp = async (req, res, next) => {
     }
     res.status(200).json({ success: true, data: camp });
   } catch (err) {
-    next(new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404));
+    next(err);
   }
 };
 
@@ -41,7 +41,7 @@ exports.createCamp = async (req, res, next) => {
       data: camp,
     });
   } catch (err) {
-    res.status(400).json({ success: false });
+    next(err);
   }
 };
 
@@ -55,11 +55,13 @@ exports.updateCamp = async (req, res, next) => {
       runValidators: true,
     });
     if (!camp) {
-      return res.status(400).json({ success: false });
+      return next(
+        new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({ success: true, data: camp });
   } catch (err) {
-    res.status(400).json({ success: false });
+    next(err);
   }
 };
 
@@ -70,10 +72,12 @@ exports.deleteCamp = async (req, res, next) => {
   try {
     const camp = await Camp.findByIdAndDelete(req.params.id);
     if (!camp) {
-      return res.status(400).json({ success: false });
+      return next(
+        new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404)
+      );
     }
     res.status(200).json({ success: true, data: {} });
   } catch (err) {
-    res.status(400).json({ success: false });
+    next(err);
   }
 };
