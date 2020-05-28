@@ -8,13 +8,36 @@ const Camp = require('../models/Camp');
 // @access Public
 exports.getCamps = aysncHandler(async (req, res, next) => {
   let query;
-  let queryString = JSON.stringify(req.query);
+  // Copy request query
+  const reqQuery = { ...req.query };
 
+  // Fields to exclude
+  const removeFields = ['select', 'sort'];
+
+  // Loop over removeFields and delete them from reqQuery
+  removeFields.forEach((param) => delete reqQuery[param]);
+
+  // Create query string
+  let queryString = JSON.stringify(reqQuery);
+  // Create operators
   queryString = queryString.replace(
     /\b(gt|gte|lt|lte|in)\b/g,
     (match) => `$${match}`
   );
   query = Camp.find(JSON.parse(queryString));
+  // select fields
+  if (req.query.select) {
+    const fields = req.query.select.split(',').join(' ');
+    query = query.select(fields);
+  }
+  // Sort
+  if (req.query.sort) {
+    const sortBy = req.query.sort.split(',').join(' ');
+    query = query.sort(sortBy);
+  } else {
+    query = query.sort('-createdAt');
+  }
+
   const camps = await query;
   res.status(200).json({ success: true, count: camps.length, data: camps });
 });
