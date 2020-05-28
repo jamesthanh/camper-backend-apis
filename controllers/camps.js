@@ -7,7 +7,15 @@ const Camp = require('../models/Camp');
 // @route GET /api/v1/camps
 // @access Public
 exports.getCamps = aysncHandler(async (req, res, next) => {
-  const camps = await Camp.find();
+  let query;
+  let queryString = JSON.stringify(req.query);
+
+  queryString = queryString.replace(
+    /\b(gt|gte|lt|lte|in)\b/g,
+    (match) => `$${match}`
+  );
+  query = Camp.find(JSON.parse(queryString));
+  const camps = await query;
   res.status(200).json({ success: true, count: camps.length, data: camps });
 });
 
