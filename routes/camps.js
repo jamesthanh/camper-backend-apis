@@ -6,8 +6,10 @@ const {
   createCamp,
   updateCamp,
   deleteCamp,
+  getCampsInRadius,
 } = require('../controllers/camps');
 const router = express.Router();
+router.route('/radius/:zipcode/:distance').get(getCampsInRadius);
 
 router.route('/').get(getCamps).post(createCamp);
 
