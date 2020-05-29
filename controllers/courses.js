@@ -1,6 +1,7 @@
 const ErrorResponse = require('../services/errorResponse');
 const aysncHandler = require('../middleware/async');
 const Course = require('../models/Course');
+const Camp = require('../models/Camp');
 
 // @desc Get all courses
 // @route GET /api/v1/courses
@@ -22,5 +23,49 @@ exports.getCourses = aysncHandler(async (req, res, next) => {
     success: true,
     count: courses.length,
     data: courses,
+  });
+});
+
+// @desc Get all courses
+// @route GET /api/v1/course/:id
+// @access Public
+exports.getCourse = aysncHandler(async (req, res, next) => {
+  const course = await Course.findById(req.params.id).populate({
+    path: 'camp',
+    select: 'name description',
+  });
+
+  if (!course) {
+    return next(
+      new ErrorResponse(`No course with the id of ${req.params.id}`),
+      404
+    );
+  }
+  res.status(200).json({
+    success: true,
+    data: course,
+  });
+});
+
+// @desc Add course
+// @route POST /api/v1/camps/:campId/courses
+// @access Private
+exports.addCourse = aysncHandler(async (req, res, next) => {
+  req.body.camp = req.params.campId;
+
+  const camp = await Camp.findById(req.params.campId);
+
+  if (!camp) {
+    return next(
+      new ErrorResponse(`No camp with the id of ${req.params.campId}`),
+      404
+    );
+  }
+
+  const course = await Course.create(req.body);
+
+  res.status(200).json({
+    success: true,
+    data: course,
   });
 });
