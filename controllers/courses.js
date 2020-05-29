@@ -69,3 +69,48 @@ exports.addCourse = aysncHandler(async (req, res, next) => {
     data: course,
   });
 });
+
+// @desc update course
+// @route PUT /api/v1/courses/:id
+// @access Private
+exports.updateCourse = aysncHandler(async (req, res, next) => {
+  let course = await Course.findById(req.params.id);
+
+  if (!course) {
+    return next(
+      new ErrorResponse(`No course with the id of ${req.params.campId}`),
+      404
+    );
+  }
+
+  course = await Course.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    data: course,
+  });
+});
+
+// @desc delete course
+// @route Delete /api/v1/courses/:id
+// @access Private
+exports.deleteCourse = aysncHandler(async (req, res, next) => {
+  const course = await Course.findById(req.params.id);
+
+  if (!course) {
+    return next(
+      new ErrorResponse(`No course with the id of ${req.params.campId}`),
+      404
+    );
+  }
+
+  await course.remove();
+
+  res.status(200).json({
+    success: true,
+    data: {},
+  });
+});
