@@ -115,12 +115,13 @@ exports.updateCamp = aysncHandler(async (req, res, next) => {
 // @route DELETE /api/v1/camps/:id
 // @access Private
 exports.deleteCamp = aysncHandler(async (req, res, next) => {
-  const camp = await Camp.findByIdAndDelete(req.params.id);
+  const camp = await Camp.findById(req.params.id);
   if (!camp) {
     return next(
       new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404)
     );
   }
+  camp.remove();
   res.status(200).json({ success: true, data: {} });
 });
 

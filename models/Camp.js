@@ -129,6 +129,13 @@ CampSchema.pre('save', async function (next) {
   next();
 });
 
+// Cascade delete courses when a camp is deleted
+CampSchema.pre('remove', async function (next) {
+  console.log(`Course is being removed from camp ${this._id}`);
+  await this.model('Course').deleteMany({ camp: this._id });
+  next();
+});
+
 // Reverse populate with virtuals
 CampSchema.virtual('courses', {
   ref: 'Course',
