@@ -13,6 +13,7 @@ connectDB();
 
 // Route file
 const camps = require('./routes/camps');
+const courses = require('./routes/courses');
 
 const app = express();
 
@@ -26,6 +27,7 @@ if (process.env.NODE_ENV === 'development') {
 
 // Moute Routers
 app.use('/api/v1/camps', camps);
+app.use('/api/v1/courses', courses);
 
 app.use(errorHanlder);
 

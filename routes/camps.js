@@ -8,7 +8,15 @@ const {
   deleteCamp,
   getCampsInRadius,
 } = require('../controllers/camps');
+
+// Include other resource routes
+const courseRouter = require('./courses');
+
 const router = express.Router();
+
+// Rerouting into other resource
+router.use('/:campId/courses', courseRouter);
+
 router.route('/radius/:zipcode/:distance').get(getCampsInRadius);
 
 router.route('/').get(getCamps).post(createCamp);
