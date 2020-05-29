@@ -11,7 +11,11 @@ exports.getCourses = aysncHandler(async (req, res, next) => {
   if (req.params.campId) {
     query = Course.find({ camp: req.params.campId });
   } else {
-    query = Course.find();
+    query = Course.find().populate({
+      // Show only specific fields of camps
+      path: 'camp',
+      select: 'name description',
+    });
   }
   const courses = await query;
   res.status(200).json({

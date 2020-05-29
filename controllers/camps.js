@@ -24,7 +24,7 @@ exports.getCamps = aysncHandler(async (req, res, next) => {
     /\b(gt|gte|lt|lte|in)\b/g,
     (match) => `$${match}`
   );
-  query = Camp.find(JSON.parse(queryString));
+  query = Camp.find(JSON.parse(queryString)).populate('courses');
   // select fields
   if (req.query.select) {
     const fields = req.query.select.split(',').join(' ');
