@@ -10,6 +10,9 @@ const {
   uploadPhoto,
 } = require('../controllers/camps');
 
+const Camp = require('../models/Camp');
+const advancedResults = require('../middleware/advancedResults');
+
 // Include other resource routes
 const courseRouter = require('./courses');
 
@@ -22,7 +25,10 @@ router.route('/radius/:zipcode/:distance').get(getCampsInRadius);
 
 router.route('/:id/photo').put(uploadPhoto);
 
-router.route('/').get(getCamps).post(createCamp);
+router
+  .route('/')
+  .get(advancedResults(Camp, 'courses'), getCamps)
+  .post(createCamp);
 
 router.route('/:id').get(getCamp).put(updateCamp).delete(deleteCamp);
 
