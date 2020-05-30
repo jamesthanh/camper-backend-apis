@@ -31,14 +31,14 @@ const courses = JSON.parse(
 const importData = async () => {
   try {
     await Camp.create(camps);
-    //
+    await Course.create(courses);
     console.log('Data imported ...'.green.inverse);
     process.exit();
   } catch (err) {
     console.log(err);
   }
 };
-// Delete data
+// Delete datan
 const deleteData = async () => {
   try {
     await Camp.deleteMany();

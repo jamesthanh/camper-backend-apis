@@ -7,6 +7,7 @@ const {
   updateCamp,
   deleteCamp,
   getCampsInRadius,
+  uploadPhoto,
 } = require('../controllers/camps');
 
 // Include other resource routes
@@ -18,6 +19,8 @@ const router = express.Router();
 router.use('/:campId/courses', courseRouter);
 
 router.route('/radius/:zipcode/:distance').get(getCampsInRadius);
+
+router.route('/:id/photo').put(uploadPhoto);
 
 router.route('/').get(getCamps).post(createCamp);
 

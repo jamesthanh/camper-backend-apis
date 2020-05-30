@@ -1,3 +1,4 @@
+const path = require('path');
 const ErrorResponse = require('../services/errorResponse');
 const aysncHandler = require('../middleware/async');
 const geocoder = require('../services/geocoder');
@@ -149,5 +150,52 @@ exports.getCampsInRadius = aysncHandler(async (req, res, next) => {
     success: true,
     count: camps.length,
     data: camps,
+  });
+});
+
+// @desc Upload photo for  camps
+// @route PUT /api/v1/camps/:id/photo
+// @access Private
+exports.uploadPhoto = aysncHandler(async (req, res, next) => {
+  const camp = await Camp.findById(req.params.id);
+  if (!camp) {
+    return next(
+      new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404)
+    );
+  }
+  if (!req.files) {
+    return next(new ErrorResponse(`Please upload a file`, 400));
+  }
+  const file = req.files.file;
+
+  // Make sure that the upload file is a photo
+  if (!file.mimetype.startsWith('image')) {
+    return next(
+      new ErrorResponse(`The selected file is not a photo, please retry`, 400)
+    );
+  }
+  // Check file size
+  if (file.size > process.env.MAX_FILE_UPLOAD) {
+    return next(
+      new ErrorResponse(
+        `The photo file is too large needs to be less than ${process.env.MAX_FILE_UPLOAD}, please retry`,
+        400
+      )
+    );
+  }
+
+  // Create custom file name
+  file.name = `photo_${camp._id}${path.parse(file.name).ext}`;
+
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    if (err) {
+      console.error(err);
+      return next(new ErrorResponse(`File upload is not working`, 500));
+    }
+    await Camp.findByIdAndUpdate(req.params.id, { photo: file.name });
+    res.status(200).json({
+      success: true,
+      data: file.name,
+    });
   });
 });
