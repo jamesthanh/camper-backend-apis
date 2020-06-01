@@ -54,15 +54,25 @@ exports.createCamp = aysncHandler(async (req, res, next) => {
 // @route PUT /api/v1/camps/:id
 // @access Private
 exports.updateCamp = aysncHandler(async (req, res, next) => {
-  const camp = await Camp.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
+  let camp = await Camp.findById(req.params.id);
   if (!camp) {
     return next(
       new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404)
     );
   }
+  // Check for the user is the camp owner
+  if (camp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this camp`,
+        401
+      )
+    );
+  }
+  camp = await Camp.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
   res.status(200).json({ success: true, data: camp });
 });
 
@@ -74,6 +84,15 @@ exports.deleteCamp = aysncHandler(async (req, res, next) => {
   if (!camp) {
     return next(
       new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404)
+    );
+  }
+  // Check for the user is the camp owner
+  if (camp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to delete this camp`,
+        401
+      )
     );
   }
   camp.remove();
@@ -117,6 +136,16 @@ exports.uploadPhoto = aysncHandler(async (req, res, next) => {
       new ErrorResponse(`Camp not found with id of ${req.params.id}`, 404)
     );
   }
+  // Check for the user is the camp owner
+  if (camp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.params.id} is not authorized to update this camp`,
+        401
+      )
+    );
+  }
+
   if (!req.files) {
     return next(new ErrorResponse(`Please upload a file`, 400));
   }
