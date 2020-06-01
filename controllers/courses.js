@@ -46,6 +46,7 @@ exports.getCourse = aysncHandler(async (req, res, next) => {
 // @access Private
 exports.addCourse = aysncHandler(async (req, res, next) => {
   req.body.camp = req.params.campId;
+  req.body.user = req.user.id;
 
   const camp = await Camp.findById(req.params.campId);
 
@@ -53,6 +54,16 @@ exports.addCourse = aysncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse(`No camp with the id of ${req.params.campId}`),
       404
+    );
+  }
+
+  // Check for the user is the course owner
+  if (camp.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to add courses to the camp with id of ${camp._id}`,
+        401
+      )
     );
   }
 
@@ -74,6 +85,15 @@ exports.updateCourse = aysncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse(`No course with the id of ${req.params.campId}`),
       404
+    );
+  }
+  // Check for the user is the course owner
+  if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to update course with id of ${course._id}`,
+        401
+      )
     );
   }
 
@@ -98,6 +118,15 @@ exports.deleteCourse = aysncHandler(async (req, res, next) => {
     return next(
       new ErrorResponse(`No course with the id of ${req.params.campId}`),
       404
+    );
+  }
+  // Check for the user is the course owner
+  if (course.user.toString() !== req.user.id && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `User ${req.user.id} is not authorized to delete course with id of ${course._id}`,
+        401
+      )
     );
   }
 

@@ -35,6 +35,11 @@ const CourseSchema = new mongoose.Schema({
     ref: 'Camp',
     required: true,
   },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: true,
+  },
 });
 
 // static method to get average of course tuituins
