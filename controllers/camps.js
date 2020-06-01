@@ -28,6 +28,21 @@ exports.getCamp = aysncHandler(async (req, res, next) => {
 // @route POST /api/v1/camps
 // @access Private
 exports.createCamp = aysncHandler(async (req, res, next) => {
+  // Add User to req.body
+  req.body.user = req.user.id;
+
+  // Check for pulic camp
+  const publicCamp = await Camp.findOne({ user: req.user.id });
+
+  // If user is not an admin, they can only add 1 camp
+  if (publicCamp && req.user.role !== 'admin') {
+    return next(
+      new ErrorResponse(
+        `The user with ID ${req.user.id} has already created a camp`,
+        400
+      )
+    );
+  }
   const camp = await Camp.create(req.body);
   res.status(201).json({
     success: true,
