@@ -38,3 +38,27 @@ exports.getReview = aysncHandler(async (req, res, next) => {
     data: review,
   });
 });
+
+// @desc Add review
+// @route POST /api/v1/camps/:campId/reviews
+// @access Private
+exports.addReview = aysncHandler(async (req, res, next) => {
+  req.body.camp = req.params.campId;
+  req.body.user = req.user.id;
+
+  const camp = await Camp.findById(req.params.campId);
+  if (!camp) {
+    return next(
+      new ErrorResponse(
+        `No Camp found with the ID of ${req.params.campId}`,
+        404
+      )
+    );
+  }
+  const review = await Review.create(req.body);
+
+  res.status(201).json({
+    success: true,
+    data: review,
+  });
+});

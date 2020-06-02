@@ -32,4 +32,7 @@ const ReviewSchema = new mongoose.Schema({
   },
 });
 
+// Prevent from adding more than one review per camp
+ReviewSchema.index({ camp: 1, user: 1 }, { unique: true });
+
 module.exports = mongoose.model('Review', ReviewSchema);
