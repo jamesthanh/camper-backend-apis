@@ -8,6 +8,8 @@ const cookieParser = require('cookie-parser');
 const errorHanlder = require('./middleware/error');
 const connectDB = require('./config/db');
 const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const helmet = require('helmet');
 
 // Load config file
 dotenv.config({ path: './config/config.env' });
@@ -40,6 +42,12 @@ app.use(fileupload());
 
 // Prevent NoSQL injection
 app.use(mongoSanitize());
+
+// Set secured header
+app.use(helmet());
+
+// Prevent XSS
+app.use(xss());
 
 // set static folder
 app.use(express.static(path.join(__dirname, 'public')));
