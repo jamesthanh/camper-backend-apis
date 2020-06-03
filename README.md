@@ -1,7 +1,7 @@
 # Traning Camp Finder API Management
 
 > A fully documented api list for training camper finder project
-> Demo: https://trainingcampbrowser.xyz/
+- Demo: https://trainingcampbrowser.xyz/
 
 ## Usage
 
